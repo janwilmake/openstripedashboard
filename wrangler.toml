@@ -1,0 +1,10 @@
+name = "openstripedashboard"
+main = "main.ts"
+compatibility_date = "2025-06-01"
+assets.directory = "./"
+
+dev.port = 3000
+routes = [
+  { pattern = "openstripedashboard.com", custom_domain = true },
+  { pattern = "www.openstripedashboard.com", custom_domain = true }
+]
