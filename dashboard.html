@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Dashboard For Active Payment Links</title>
+    <meta name="description" content="Easily Oversee How Much each payment link is earning" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://openstripedashboard.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Revenue Dashboard For Active Payment Links" />
+    <meta property="og:description" content="Easily Oversee How Much each payment link is earning" />
+    <meta property="og:image" content="https://quickog.com/screenshot/openstripedashboard.com" />
+    <meta property="og:image:alt" content="Easily Oversee How Much each payment link is earning" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="openstripedashboard.com" />
+    <meta property="twitter:url" content="https://openstripedashboard.com" />
+    <meta name="twitter:title" content="Revenue Dashboard For Active Payment Links" />
+    <meta name="twitter:description" content="Easily Oversee How Much each payment link is earning" />
+    <meta name="twitter:image" content="https://quickog.com/screenshot/openstripedashboard.com" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .auth-container {
+            max-width: 500px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .auth-container h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .auth-container p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .reset-secret-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .payment-link-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .payment-link-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .expand-icon {
+            margin-right: 10px;
+            transition: transform 0.2s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .transactions-row {
+            display: none;
+            background-color: #f8f9fa;
+        }
+
+        .transactions-row.show {
+            display: table-row;
+        }
+
+        .transactions-table {
+            margin: 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .transactions-table th {
+            background: #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .transactions-table td {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .no-transactions {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .payment-link-url {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .payment-link-url:hover {
+            text-decoration: underline;
+        }
+
+        .date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .status-active {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #6c757d;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .auth-container {
+                margin: 50px auto;
+                padding: 20px;
+            }
+
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+
+            .reset-secret-btn {
+                position: static;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Authentication Screen -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <h1>Open Stripe Dashboard</h1>
+            <p>Enter your Stripe Secret Key to see your payment-link revenue and transactions.</p>
+
+            <div id="auth-error" class="error-message hidden"></div>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="stripe-secret">Stripe Secret Key</label>
+                    <input type="password" id="stripe-secret" placeholder="sk_test_... or sk_live_..." required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn" id="auth-submit">
+                    Access Dashboard
+                </button>
+            </form>
+
+            <p>don't worry the secret is only stored in your browser. if you want more security, host
+                openstripedashboard <a href="https://github.com/janwilmake/openstripedashboard">yourself</a> (or make a
+                better one)</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <div class="container">
+            <div class="header">
+                <h1>Payment Links Dashboard</h1>
+                <button class="btn btn-danger reset-secret-btn" onclick="resetSecret()">
+                    Reset Secret Key
+                </button>
+                <div id="summary-stats" class="summary-stats">
+                    <!-- Summary stats will be populated here -->
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <span>Loading payment data...</span>
+            </div>
+
+            <div id="main-content" style="display: none;">
+                <div class="table-container">
+                    <table id="payment-links-table">
+                        <thead>
+                            <tr>
+                                <th>Payment Link</th>
+                                <th>Status</th>
+                                <th>Products</th>
+                                <th>Total Revenue</th>
+                                <th>This Month</th>
+                                <th>Last Month</th>
+                                <th>Transactions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-links-tbody">
+                            <!-- Payment links will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="last-updated" id="last-updated"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'payment_links_data';
+        const LAST_UPDATED_KEY = 'payment_links_last_updated';
+        const STRIPE_SECRET_KEY = 'stripe_secret_key';
+
+        let stripeSecret = '';
+
+        function formatCurrency(amountCents, currency = 'USD') {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: currency.toUpperCase(),
+                minimumFractionDigits: 2
+            }).format(amountCents / 100);
+        }
+
+        function formatDate(timestamp) {
+            return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function isThisMonth(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const now = new Date();
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }
+
+        function isLastMonth(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const now = new Date();
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+            return date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear();
+        }
+
+        function calculateMonthlyRevenue(transactions) {
+            let thisMonth = 0;
+            let lastMonth = 0;
+
+            transactions.forEach(transaction => {
+                if (isThisMonth(transaction.created)) {
+                    thisMonth += transaction.amount;
+                } else if (isLastMonth(transaction.created)) {
+                    lastMonth += transaction.amount;
+                }
+            });
+
+            return { thisMonth, lastMonth };
+        }
+
+        function renderSummaryStats(data) {
+            const summaryContainer = document.getElementById('summary-stats');
+
+            let totalThisMonth = 0;
+            let totalLastMonth = 0;
+
+            data.payment_links.forEach(link => {
+                const monthly = calculateMonthlyRevenue(link.transactions);
+                totalThisMonth += monthly.thisMonth;
+                totalLastMonth += monthly.lastMonth;
+            });
+
+            summaryContainer.innerHTML = `
+                <div class="stat-card">
+                    <h3>Active Payment Links</h3>
+                    <div class="value">${data.total_active_payment_links}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Transactions</h3>
+                    <div class="value">${data.total_successful_transactions}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <div class="value">${formatCurrency(data.total_revenue_cents)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>This Month</h3>
+                    <div class="value">${formatCurrency(totalThisMonth)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Last Month</h3>
+                    <div class="value">${formatCurrency(totalLastMonth)}</div>
+                </div>
+            `;
+        }
+
+        function renderPaymentLinks(data) {
+            const tbody = document.getElementById('payment-links-tbody');
+            tbody.innerHTML = '';
+
+            data.payment_links.forEach((link, index) => {
+                const totalRevenue = link.transactions.reduce((sum, t) => sum + t.amount, 0);
+                const monthly = calculateMonthlyRevenue(link.transactions);
+                const productNames = link.line_items.map(item => item.product_name).join(', ');
+
+                // Main payment link row
+                const row = document.createElement('tr');
+                row.className = 'payment-link-row';
+                row.onclick = () => toggleTransactions(index);
+
+                row.innerHTML = `
+                    <td>
+                        <span class="expand-icon" id="expand-icon-${index}">▶</span>
+                        <a href="${link.url}" target="_blank" class="payment-link-url">${link.line_items?.[0]?.description || link.id}</a>
+                    </td>
+                    <td><span class="${link.active ? 'status-active' : 'status-inactive'}">${link.active ? 'Active' : 'Inactive'}</span></td>
+                    <td class="product-name">${productNames}</td>
+                    <td class="amount">${formatCurrency(totalRevenue)}</td>
+                    <td class="amount">${formatCurrency(monthly.thisMonth)}</td>
+                    <td class="amount">${formatCurrency(monthly.lastMonth)}</td>
+                    <td>${link.transactions.length}</td>
+                `;
+                tbody.appendChild(row);
+
+                // Transactions sub-table row
+                const transactionsRow = document.createElement('tr');
+                transactionsRow.className = 'transactions-row';
+                transactionsRow.id = `transactions-${index}`;
+
+                const transactionsCell = document.createElement('td');
+                transactionsCell.colSpan = 7;
+
+                if (link.transactions.length > 0) {
+                    transactionsCell.innerHTML = `
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Customer Email</th>
+                                    <th>Amount</th>
+                                    <th>Currency</th>
+                                    <th>Payment Intent ID</th>
+                                    <th>Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${link.transactions.map(transaction => `
+                                    <tr>
+                                        <td class="date">${formatDate(transaction.created)}</td>
+                                        <td>${transaction.customer_email || 'N/A'}</td>
+                                        <td class="amount">${formatCurrency(transaction.amount, transaction.currency)}</td>
+                                        <td>${transaction.currency.toUpperCase()}</td>
+                                        <td><code>${transaction.payment_intent_id}</code></td>
+                                        <td>${transaction.receipt_url ? `<a href="${transaction.receipt_url}" target="_blank">View Receipt</a>` : 'N/A'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    transactionsCell.innerHTML = '<div class="no-transactions">No transactions found</div>';
+                }
+
+                transactionsRow.appendChild(transactionsCell);
+                tbody.appendChild(transactionsRow);
+            });
+        }
+
+        function toggleTransactions(index) {
+            const transactionsRow = document.getElementById(`transactions-${index}`);
+            const expandIcon = document.getElementById(`expand-icon-${index}`);
+
+            if (transactionsRow.classList.contains('show')) {
+                transactionsRow.classList.remove('show');
+                expandIcon.classList.remove('expanded');
+            } else {
+                transactionsRow.classList.add('show');
+                expandIcon.classList.add('expanded');
+            }
+        }
+
+        function renderData(data) {
+            renderSummaryStats(data);
+            renderPaymentLinks(data);
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+
+            const lastUpdated = document.getElementById('last-updated');
+            lastUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        function loadFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            const lastUpdated = localStorage.getItem(LAST_UPDATED_KEY);
+
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    renderData(data);
+
+                    if (lastUpdated) {
+                        const lastUpdatedEl = document.getElementById('last-updated');
+                        lastUpdatedEl.textContent = `Last updated: ${new Date(lastUpdated).toLocaleString()} (cached)`;
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored data:', e);
+                }
+            }
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/index.json', {
+                    headers: {
+                        'Authorization': `Bearer ${stripeSecret}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Invalid Stripe secret key. Please check your credentials.');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Store in localStorage
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                localStorage.setItem(LAST_UPDATED_KEY, new Date().toISOString());
+
+                renderData(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #dc3545; text-align: center;">
+                        <h3>Error loading data</h3>
+                        <p>${error.message}</p>
+                        <button onclick="fetchData()" class="btn" style="margin-top: 10px;">Retry</button>
+                        <button onclick="resetSecret()" class="btn btn-secondary" style="margin-top: 10px;">Change Secret Key</button>
+                    </div>
+                `;
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            // Reset loading state
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+
+            // Load from storage first
+            loadFromStorage();
+
+            // Then fetch fresh data
+            fetchData();
+        }
+
+        function showAuthScreen() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('auth-error').classList.add('hidden');
+            document.getElementById('stripe-secret').value = '';
+        }
+
+        function resetSecret() {
+            localStorage.removeItem(STRIPE_SECRET_KEY);
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LAST_UPDATED_KEY);
+            stripeSecret = '';
+            showAuthScreen();
+        }
+
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function validateStripeSecret(secret) {
+            return secret && (secret.startsWith('sk_test_') || secret.startsWith('sk_live_'));
+        }
+
+        // Authentication form handler
+        document.getElementById('auth-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const secretInput = document.getElementById('stripe-secret');
+            const submitBtn = document.getElementById('auth-submit');
+            const secret = secretInput.value.trim();
+
+            if (!validateStripeSecret(secret)) {
+                showAuthError('Please enter a valid Stripe secret key (starts with sk_test_ or sk_live_)');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Fetching your data...';
+
+            stripeSecret = secret;
+            localStorage.setItem(STRIPE_SECRET_KEY, secret);
+
+            // Test the secret key by making a request
+            fetch('/index.json', {
+                headers: {
+                    'Authorization': `Bearer ${stripeSecret}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Invalid Stripe secret key. Please check your credentials.');
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // already store here too
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    localStorage.setItem(LAST_UPDATED_KEY, new Date().toISOString());
+
+                    showDashboard();
+                })
+                .catch(error => {
+                    console.error('Authentication error:', error);
+                    showAuthError(error.message);
+                    localStorage.removeItem(STRIPE_SECRET_KEY);
+                    stripeSecret = '';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Access Dashboard';
+                });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we have a stored secret key
+            const storedSecret = localStorage.getItem(STRIPE_SECRET_KEY);
+
+            if (storedSecret && validateStripeSecret(storedSecret)) {
+                stripeSecret = storedSecret;
+                showDashboard();
+            } else {
+                showAuthScreen();
+            }
+        });
+    </script>
+</body>
+
+</html>
