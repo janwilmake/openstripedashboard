@@ -25,17 +25,117 @@
             padding: 20px;
         }
 
+        .auth-container {
+            max-width: 500px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .auth-container h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .auth-container p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
         .header {
             background: white;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
+            position: relative;
         }
 
         .header h1 {
             color: #2c3e50;
             margin-bottom: 10px;
+        }
+
+        .reset-secret-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
 
         .summary-stats {
@@ -212,9 +312,18 @@
             font-size: 0.9rem;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
+            }
+
+            .auth-container {
+                margin: 50px auto;
+                padding: 20px;
             }
 
             .summary-stats {
@@ -229,51 +338,90 @@
             td {
                 padding: 10px 8px;
             }
+
+            .reset-secret-btn {
+                position: static;
+                margin-top: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Payment Links Dashboard</h1>
-            <div id="summary-stats" class="summary-stats">
-                <!-- Summary stats will be populated here -->
+    <!-- Authentication Screen -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <h1>Stripe Payment Dashboard</h1>
+            <p>Enter your Stripe Secret Key to access the payment links dashboard.</p>
+
+            <div id="auth-error" class="error-message hidden"></div>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="stripe-secret">Stripe Secret Key</label>
+                    <input type="password" id="stripe-secret" placeholder="sk_test_... or sk_live_..." required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn" id="auth-submit">
+                    Access Dashboard
+                </button>
+            </form>
+
+            <p>don't worry the secret is only stored in your browser. if you want more security, host
+                openstripedashboard <a href="https://github.com/janwilmake/openstripedashboard">yourself</a> (or make a
+                better one)</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <div class="container">
+            <div class="header">
+                <h1>Payment Links Dashboard</h1>
+                <button class="btn btn-danger reset-secret-btn" onclick="resetSecret()">
+                    Reset Secret Key
+                </button>
+                <div id="summary-stats" class="summary-stats">
+                    <!-- Summary stats will be populated here -->
+                </div>
             </div>
-        </div>
 
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <span>Loading payment data...</span>
-        </div>
-
-        <div id="main-content" style="display: none;">
-            <div class="table-container">
-                <table id="payment-links-table">
-                    <thead>
-                        <tr>
-                            <th>Payment Link</th>
-                            <th>Status</th>
-                            <th>Products</th>
-                            <th>Total Revenue</th>
-                            <th>This Month</th>
-                            <th>Last Month</th>
-                            <th>Transactions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="payment-links-tbody">
-                        <!-- Payment links will be populated here -->
-                    </tbody>
-                </table>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <span>Loading payment data...</span>
             </div>
-        </div>
 
-        <div class="last-updated" id="last-updated"></div>
+            <div id="main-content" style="display: none;">
+                <div class="table-container">
+                    <table id="payment-links-table">
+                        <thead>
+                            <tr>
+                                <th>Payment Link</th>
+                                <th>Status</th>
+                                <th>Products</th>
+                                <th>Total Revenue</th>
+                                <th>This Month</th>
+                                <th>Last Month</th>
+                                <th>Transactions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-links-tbody">
+                            <!-- Payment links will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="last-updated" id="last-updated"></div>
+        </div>
     </div>
 
     <script>
         const STORAGE_KEY = 'payment_links_data';
         const LAST_UPDATED_KEY = 'payment_links_last_updated';
+        const STRIPE_SECRET_KEY = 'stripe_secret_key';
+
+        let stripeSecret = '';
 
         function formatCurrency(amountCents, currency = 'USD') {
             return new Intl.NumberFormat('en-US', {
@@ -474,8 +622,17 @@
 
         async function fetchData() {
             try {
-                const response = await fetch('/index.json');
+                const response = await fetch('/index.json', {
+                    headers: {
+                        'Authorization': `Bearer ${stripeSecret}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Invalid Stripe secret key. Please check your credentials.');
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
@@ -492,19 +649,114 @@
                     <div style="color: #dc3545; text-align: center;">
                         <h3>Error loading data</h3>
                         <p>${error.message}</p>
-                        <button onclick="fetchData()" style="margin-top: 10px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+                        <button onclick="fetchData()" class="btn" style="margin-top: 10px;">Retry</button>
+                        <button onclick="resetSecret()" class="btn btn-secondary" style="margin-top: 10px;">Change Secret Key</button>
                     </div>
                 `;
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        function showDashboard() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            // Reset loading state
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+
             // Load from storage first
             loadFromStorage();
 
             // Then fetch fresh data
             fetchData();
+        }
+
+        function showAuthScreen() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('auth-error').classList.add('hidden');
+            document.getElementById('stripe-secret').value = '';
+        }
+
+        function resetSecret() {
+            localStorage.removeItem(STRIPE_SECRET_KEY);
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LAST_UPDATED_KEY);
+            stripeSecret = '';
+            showAuthScreen();
+        }
+
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function validateStripeSecret(secret) {
+            return secret && (secret.startsWith('sk_test_') || secret.startsWith('sk_live_'));
+        }
+
+        // Authentication form handler
+        document.getElementById('auth-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const secretInput = document.getElementById('stripe-secret');
+            const submitBtn = document.getElementById('auth-submit');
+            const secret = secretInput.value.trim();
+
+            if (!validateStripeSecret(secret)) {
+                showAuthError('Please enter a valid Stripe secret key (starts with sk_test_ or sk_live_)');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Validating...';
+
+            stripeSecret = secret;
+            localStorage.setItem(STRIPE_SECRET_KEY, secret);
+
+            // Test the secret key by making a request
+            fetch('/index.json', {
+                headers: {
+                    'Authorization': `Bearer ${stripeSecret}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Invalid Stripe secret key. Please check your credentials.');
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showDashboard();
+                })
+                .catch(error => {
+                    console.error('Authentication error:', error);
+                    showAuthError(error.message);
+                    localStorage.removeItem(STRIPE_SECRET_KEY);
+                    stripeSecret = '';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Access Dashboard';
+                });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we have a stored secret key
+            const storedSecret = localStorage.getItem(STRIPE_SECRET_KEY);
+
+            if (storedSecret && validateStripeSecret(storedSecret)) {
+                stripeSecret = storedSecret;
+                showDashboard();
+            } else {
+                showAuthScreen();
+            }
         });
     </script>
 </body>
