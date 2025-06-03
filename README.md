@@ -1,5 +1,7 @@
 # Revenue Dashboard for your Active payment links
 
+[![janwilmake/openstripedashboard context](https://badge.forgithub.com/janwilmake/openstripedashboard)](https://uithub.com/janwilmake/openstripedashboard) [![janwilmake/openstripedashboard context](https://b.lmpify.com)](https://lmpify.com/?q=https://uithub.com/janwilmake/openstripedashboard)
+
 How it's made:
 
 - [![](https://b.lmpify.com/Backend)](https://lmpify.com/httpslmpifycomf-1u5jbu0)
