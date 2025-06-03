@@ -522,7 +522,7 @@
                 row.innerHTML = `
                     <td>
                         <span class="expand-icon" id="expand-icon-${index}">▶</span>
-                        <a href="${link.url}" target="_blank" class="payment-link-url">${link.id}</a>
+                        <a href="${link.url}" target="_blank" class="payment-link-url">${link.line_items?.[0]?.description || link.id}</a>
                     </td>
                     <td><span class="${link.active ? 'status-active' : 'status-inactive'}">${link.active ? 'Active' : 'Inactive'}</span></td>
                     <td class="product-name">${productNames}</td>
