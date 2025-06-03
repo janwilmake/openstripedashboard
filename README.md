@@ -4,3 +4,7 @@ How it's made:
 
 - [![](https://b.lmpify.com/Backend)](https://lmpify.com/httpslmpifycomf-1u5jbu0)
 - [![](https://b.lmpify.com/Frontend)](https://lmpify.com/httpspastebincon-52uxzh0)
+
+NB: this app pulls all transactions from all **active** payment links from the stripe api and this can take a while if you have a lot of them. Please [reach out](https://x.com/janwilmake/status/1929840655800381525) if you have a different need and/or ideas to make this better.
+
+Also, if you have lots of programmatic payment links, you can deactivate them with a script [like this](https://x.com/janwilmake/status/1929832481257144509)
