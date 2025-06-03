@@ -710,7 +710,7 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Validating...';
+            submitBtn.textContent = 'Fetching your data...';
 
             stripeSecret = secret;
             localStorage.setItem(STRIPE_SECRET_KEY, secret);
@@ -731,7 +731,11 @@
                     }
                     return response.json();
                 })
-                .then(() => {
+                .then((data) => {
+                    // already store here too
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    localStorage.setItem(LAST_UPDATED_KEY, new Date().toISOString());
+
                     showDashboard();
                 })
                 .catch(error => {
